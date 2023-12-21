@@ -404,8 +404,14 @@ sensor:
   - platform: pulse_meter
     pin: GPIO33
     name: Pulse meter
+    unit_of_measurement: "l/min"
+    filters:
+      - lambda: return x / id(flow_sensor_calibration).state;
     total:
-      name: Total tulses  
+      name: Total pulses 
+      unit_of_measurement: "l"
+      filters:
+        - lambda: return x / id(flow_sensor_calibration).state;      
   - platform: dallas
     name: Dallas temperature 1
     index: 0
@@ -644,7 +650,18 @@ number:
     unit_of_measurement: "°C"
     on_value:
       - script.execute: calculate_heating_curve
-
+  - platform: template
+    name: "Flow sensor calibration"
+    id: flow_sensor_calibration
+    min_value: 1
+    max_value: 1000
+    mode: box
+    step: 1
+    restore_value: true
+    optimistic: true
+    entity_category: config
+    unit_of_measurement: "pulses/l"
+ 
 script:
   - id: calculate_heating_curve
     then:
