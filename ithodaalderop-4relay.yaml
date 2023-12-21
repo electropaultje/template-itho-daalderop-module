@@ -8,7 +8,7 @@ esphome:
   friendly_name: ${friendly_name}
   project:
     name: "electropaultje.ithodaalderop"
-    version: "1.0.2"
+    version: "1.0.3"
 
 esp32:
   board: esp32dev
@@ -20,7 +20,7 @@ external_components:
     
 dashboard_import:
   package_import_url: github://electropaultje/template-itho-daalderop-module/ithodaalderop-4relay.yaml@main
-  import_full_config: true 
+  import_full_config: true  
 
 # Enable logging
 logger:
@@ -67,7 +67,7 @@ dallas:
   
 sensor:
   - platform: modbus_spy
-    name: "Inside Temperature"
+    name: "Inside temperature"
     device_class: "temperature"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -80,7 +80,7 @@ sensor:
       - multiply: 0.01
       - delta: 0.1
   - platform: modbus_spy
-    name: "Domestic Hot Water Temperature"
+    name: "Domestic hot water temperature"
     device_class: "temperature"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -94,7 +94,7 @@ sensor:
       - multiply: 0.01  
       - delta: 0.1  
   - platform: modbus_spy
-    name: "Heating/Cooling Temperature"
+    name: "Heating/cooling temperature"
     device_class: "temperature"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -108,7 +108,7 @@ sensor:
       - multiply: 0.01    
       - delta: 0.1
   - platform: modbus_spy
-    name: "Heat Exchanger Water Outlet Temperature"
+    name: "Heat exchanger water outlet temperature"
     device_class: "temperature"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -128,7 +128,7 @@ sensor:
             state: !lambda |-
               return x - id(heat_exchanger_water_inlet_temperature).state;
   - platform: modbus_spy
-    name: "Heat Exchanger Water Inlet Temperature"
+    name: "Heat exchanger water inlet temperature"
     id: heat_exchanger_water_inlet_temperature
     device_class: "temperature"
     accuracy_decimals: 1
@@ -143,7 +143,7 @@ sensor:
       - multiply: 0.01    
       - delta: 0.1
   - platform: template
-    name: Heat Exchanger Delta T
+    name: Heat exchanger delta T
     id: heat_exchanger_delta_t  
     device_class: "temperature"
     accuracy_decimals: 1
@@ -151,7 +151,7 @@ sensor:
     unit_of_measurement: "K"
     icon: "mdi:delta"                             
   - platform: modbus_spy
-    name: "Indoor Coil Temperature"
+    name: "Indoor coil temperature"
     device_class: "temperature"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -165,7 +165,7 @@ sensor:
       - multiply: 0.01   
       - delta: 0.1
   - platform: modbus_spy
-    name: "Heating/Cooling Circuit 1 Temperature"
+    name: "Heating/cooling circuit 1 temperature"
     device_class: "temperature"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -179,7 +179,7 @@ sensor:
       - multiply: 0.01
       - delta: 0.1
   - platform: modbus_spy
-    name: "Heating/Cooling Circuit 2 Temperature"
+    name: "Heating/cooling circuit 2 temperature"
     device_class: "temperature"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -193,7 +193,7 @@ sensor:
       - multiply: 0.01
       - delta: 0.1   
   - platform: modbus_spy
-    name: "Internal Pump Speed State"
+    name: "Internal pump speed state"
     state_class: "measurement"
     device_address: 0x0B
     register_address: 41304
@@ -215,7 +215,7 @@ sensor:
       then:
         - text_sensor.template.publish:
             id: internal_pump_speed_text
-            state: !lambda |
+            state: !lambda |-
               switch ((int)x)
               {
                 case 0:
@@ -228,7 +228,7 @@ sensor:
                   return "Hoog";
               }             
   - platform: modbus_spy
-    name: "Outdoor Voltage"
+    name: "Outdoor voltage"
     device_class: "voltage"
     accuracy_decimals: 0
     state_class: "measurement"
@@ -238,7 +238,7 @@ sensor:
     filters:
       - delta: 1
   - platform: modbus_spy
-    name: "Outdoor Current"
+    name: "Outdoor current"
     device_class: "current"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -249,7 +249,7 @@ sensor:
       - multiply: 0.1
       - delta: 0.1
   - platform: modbus_spy
-    name: "Compressor Working Speed Setpoint"
+    name: "Compressor working speed setpoint"
     device_class: "frequency"
     accuracy_decimals: 0
     state_class: "measurement"
@@ -259,7 +259,7 @@ sensor:
     filters:
       - delta: 1    
   - platform: modbus_spy
-    name: "Compressor Working Speed Actual"
+    name: "Compressor working speed actual"
     device_class: "frequency"
     accuracy_decimals: 0
     state_class: "measurement"
@@ -269,7 +269,7 @@ sensor:
     filters:
       - delta: 1    
   - platform: modbus_spy
-    name: "Outdoor Fan Setpoint"
+    name: "Outdoor fan setpoint"
     device_class: "frequency"
     accuracy_decimals: 0
     state_class: "measurement"
@@ -279,7 +279,7 @@ sensor:
     filters:
       - delta: 1    
   - platform: modbus_spy
-    name: "Outdoor Fan 1 Actual"
+    name: "Outdoor fan 1 actual"
     device_class: "frequency"
     accuracy_decimals: 0
     state_class: "measurement"
@@ -289,14 +289,15 @@ sensor:
     filters:
       - delta: 1   
   - platform: modbus_spy
-    name: "Expansion Valve Setting"
+    name: "Expansion valve setting"
     state_class: "measurement"
     device_address: 0x02
     register_address: 42108    
     filters:
       - delta: 1      
   - platform: modbus_spy
-    name: "Outside Temperature"
+    name: "Ambient temperature"
+    id: ambient_temperature
     device_class: "temperature"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -308,8 +309,10 @@ sensor:
       - offset: -3000
       - multiply: 0.01
       - delta: 0.1
+    on_value:
+      - script.execute: calculate_heating_curve       
   - platform: modbus_spy
-    name: "Outdoor Coil Temperature"
+    name: "Outdoor coil temperature"
     device_class: "temperature"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -322,7 +325,7 @@ sensor:
       - multiply: 0.01
       - delta: 0.1
   - platform: modbus_spy
-    name: "Discharge Temperature"
+    name: "Discharge temperature"
     device_class: "temperature"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -335,7 +338,7 @@ sensor:
       - multiply: 0.01     
       - delta: 0.1
   - platform: modbus_spy
-    name: "Suction Temperature"
+    name: "Suction temperature"
     device_class: "temperature"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -348,7 +351,7 @@ sensor:
       - multiply: 0.01 
       - delta: 0.1
   - platform: modbus_spy
-    name: "Low Pressure"
+    name: "Low pressure"
     device_class: "pressure"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -359,7 +362,7 @@ sensor:
       - multiply: 0.1    
       - delta: 0.1
   - platform: modbus_spy
-    name: "High Pressure"
+    name: "High pressure"
     device_class: "pressure"
     accuracy_decimals: 1
     state_class: "measurement"
@@ -395,54 +398,67 @@ sensor:
       );
       return timestamp;
   - platform: wifi_signal # Reports the WiFi signal strength/RSSI in dB
-    name: "WiFi Signal dB"
+    name: "WiFi signal dB"
     id: wifi_signal_db
     update_interval: 20s
   - platform: pulse_meter
     pin: GPIO33
-    name: Pulse Meter
+    name: Pulse meter    
+    unit_of_measurement: "l/min"
+    filters:
+      - lambda: return x / id(flow_sensor_calibration).state;
     total:
-      name: Total Pulses  
+      name: Total pulses 
+      unit_of_measurement: "l"
+      filters:
+        - lambda: return x / id(flow_sensor_calibration).state;   
   - platform: dallas
-    name: Dallas Temperature 1
+    name: Dallas temperature 1
     index: 0
     filters:
       - delta: 0.1  
   - platform: dallas
-    name: Dallas Temperature 2
+    name: Dallas temperature 2
     index: 1
     filters:
       - delta: 0.1      
   - platform: dallas
-    name: Dallas Temperature 3
+    name: Dallas temperature 3
     index: 2        
     filters:
-      - delta: 0.1      
+      - delta: 0.1    
+  - platform: template
+    name: "Calculated heating temperature"
+    id: calculated_heating_temperature
+    device_class: "temperature"
+    accuracy_decimals: 1
+    state_class: "measurement"
+    unit_of_measurement: "°C" 
 
 binary_sensor:
   - platform: modbus_spy
-    name: "Pump 1 Active"
+    name: "Pump 1 active"
     device_address: 0x0B
     register_address: 41301
   - platform: modbus_spy
-    name: "Pump 2 Active"
+    name: "Pump 2 active"
     device_address: 0x0B
     register_address: 41302   
   - platform: modbus_spy
-    name: "Domestic Hot Water Pump Active"
+    name: "Domestic hot water pump active"
     device_address: 0x0B
     register_address: 41303     
   - platform: modbus_spy
-    name: "Internal Pump Active"
+    name: "Internal pump active"
     device_address: 0x0B
     register_address: 41213
   - platform: modbus_spy
-    name: "Heating Switch"
+    name: "Heating switch"
     icon: "mdi:fire"
     device_address: 0x0B
     register_address: 41215
   - platform: modbus_spy
-    name: "Three Way Valve State"
+    name: "Three way valve state"
     device_address: 0x0B
     register_address: 41306    
     on_state:
@@ -455,7 +471,7 @@ binary_sensor:
               else
                 return "Tapwater";    
   - platform: modbus_spy
-    name: "Internal Auxilliary Heater"
+    name: "Internal auxilliary heater"
     icon: "mdi:flash"
     device_address: 0x0B
     register_address: 41310                
@@ -475,17 +491,17 @@ time:
 
 text_sensor:
   - platform: template
-    name: Three Way Valve
+    name: Three way valve
     id: three_way_valve_text
   - platform: template
-    name: Internal Pump Speed
+    name: Internal pump speed
     id: internal_pump_speed_text    
 
 switch:
   - platform: restart
-    name: ${friendly_name} Restart
+    name: ${friendly_name} restart
   - platform: factory_reset
-    name: ${friendly_name} Factory Reset
+    name: ${friendly_name} factory reset
   - platform: gpio
     pin: GPIO22
     name: Relais 1
@@ -497,7 +513,209 @@ switch:
     name: Relais 3
   - platform: gpio
     pin: GPIO25
-    name: Relais 4
+    name: Relais 4    
+
+number:
+  - platform: template
+    name: "Heating curve ambient temperature 1"
+    id: heating_curve_a1
+    min_value: -20
+    max_value: 30
+    step: 1
+    mode: box
+    restore_value: true
+    optimistic: true
+    device_class: temperature
+    entity_category: config
+    unit_of_measurement: "°C"
+    on_value:
+      - script.execute: calculate_heating_curve    
+  - platform: template
+    id: heating_curve_a2
+    name: "Heating curve ambient temperature 2"
+    min_value: -20
+    max_value: 30
+    step: 1
+    mode: box
+    restore_value: true
+    optimistic: true
+    device_class: temperature
+    entity_category: config
+    unit_of_measurement: "°C"
+    on_value:
+      - script.execute: calculate_heating_curve    
+  - platform: template
+    id: heating_curve_a3
+    name: "Heating curve ambient temperature 3"
+    min_value: -20
+    max_value: 30
+    step: 1
+    mode: box
+    restore_value: true
+    optimistic: true
+    device_class: temperature
+    entity_category: config
+    unit_of_measurement: "°C"
+    on_value:
+      - script.execute: calculate_heating_curve    
+  - platform: template
+    id: heating_curve_a4
+    name: "Heating curve ambient temperature 4"
+    min_value: -20
+    max_value: 30
+    step: 1
+    mode: box
+    restore_value: true
+    optimistic: true
+    device_class: temperature
+    entity_category: config
+    unit_of_measurement: "°C"
+    on_value:
+      - script.execute: calculate_heating_curve    
+  - platform: template
+    id: heating_curve_a5
+    name: "Heating curve ambient temperature 5"
+    min_value: -20
+    max_value: 30
+    step: 1
+    mode: box
+    restore_value: true
+    optimistic: true   
+    device_class: temperature
+    entity_category: config
+    unit_of_measurement: "°C"
+    on_value:
+      - script.execute: calculate_heating_curve    
+  - platform: template
+    name: "Heating curve water temperature 1"
+    id: heating_curve_t1
+    min_value: 0
+    max_value: 60
+    step: 1
+    mode: box
+    restore_value: true
+    optimistic: true 
+    device_class: temperature
+    entity_category: config
+    unit_of_measurement: "°C"
+    on_value:
+      - script.execute: calculate_heating_curve    
+  - platform: template
+    name: "Heating curve water temperature 2"
+    id: heating_curve_t2
+    min_value: 0
+    max_value: 60
+    step: 1
+    mode: box
+    restore_value: true
+    optimistic: true 
+    device_class: temperature
+    entity_category: config
+    unit_of_measurement: "°C"
+    on_value:
+      - script.execute: calculate_heating_curve    
+  - platform: template
+    name: "Heating curve water temperature 3"
+    id: heating_curve_t3
+    min_value: 0
+    max_value: 60
+    step: 1
+    mode: box
+    restore_value: true
+    optimistic: true 
+    device_class: temperature
+    entity_category: config
+    unit_of_measurement: "°C"
+    on_value:
+      - script.execute: calculate_heating_curve    
+  - platform: template
+    name: "Heating curve water temperature 4"
+    id: heating_curve_t4
+    min_value: 0
+    max_value: 60
+    step: 1
+    mode: box
+    restore_value: true
+    optimistic: true 
+    device_class: temperature
+    entity_category: config
+    unit_of_measurement: "°C"
+    on_value:
+      - script.execute: calculate_heating_curve    
+  - platform: template
+    name: "Heating curve water temperature 5"
+    id: heating_curve_t5
+    min_value: 0
+    max_value: 60
+    mode: box
+    step: 1
+    restore_value: true
+    optimistic: true                                     
+    device_class: temperature
+    entity_category: config
+    unit_of_measurement: "°C"
+    on_value:
+      - script.execute: calculate_heating_curve
+  - platform: template
+    name: "Flow sensor calibration"
+    id: flow_sensor_calibration
+    min_value: 1
+    max_value: 1000
+    mode: box
+    step: 1
+    restore_value: true
+    optimistic: true
+    entity_category: config
+    unit_of_measurement: "pulses/l"
+    
+script:
+  - id: calculate_heating_curve
+    then:
+      - sensor.template.publish:
+          id: calculated_heating_temperature   
+          state: !lambda |-
+            float ta = id(ambient_temperature).state;
+            float tw1;
+            float tw2;
+            float ta1;
+            float ta2;
+            float rc;
+            float sp;
+            int selection;
+
+            if (ta < id(heating_curve_a2).state) {
+              tw1 = id(heating_curve_t1).state;
+              tw2 = id(heating_curve_t2).state;
+              ta1 = id(heating_curve_a1).state;
+              ta2 = id(heating_curve_a2).state;
+              selection = 1;
+            }
+            else if (ta < id(heating_curve_a3).state) {
+              tw1 = id(heating_curve_t2).state;
+              tw2 = id(heating_curve_t3).state;
+              ta1 = id(heating_curve_a2).state;
+              ta2 = id(heating_curve_a3).state;
+              selection = 2;
+            }
+            else if (ta < id(heating_curve_a4).state) {
+              tw1 = id(heating_curve_t3).state;
+              tw2 = id(heating_curve_t4).state;
+              ta1 = id(heating_curve_a3).state;
+              ta2 = id(heating_curve_a4).state;
+              selection = 3;
+            }
+            else {
+              tw1 = id(heating_curve_t4).state;
+              tw2 = id(heating_curve_t5).state;
+              ta1 = id(heating_curve_a4).state;
+              ta2 = id(heating_curve_a5).state;
+              selection = 4;
+            }                        
+
+            rc = ((tw2 - tw1) / (ta2 - ta1));
+            sp = tw1 - (rc * ta1);
+
+            return (ta * rc + sp);
 
 web_server:
   port: 80
