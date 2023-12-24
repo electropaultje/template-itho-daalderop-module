@@ -61,6 +61,16 @@ modbus_spy:
   id: modbusspy
   log_not_configured_data: false
 
+output:
+  - platform: gpio
+    id: led_green_output
+    pin: GPIO18
+
+light:
+  - platform: binary
+    id: led_green
+    output: led_green_output
+
 dallas:
   - pin: GPIO27  
     update_interval: 5s
@@ -79,6 +89,10 @@ sensor:
       - offset: -3000
       - multiply: 0.01
       - delta: 0.1
+    on_raw_value:
+      - script.execute:
+          id: blink_light
+          calling_component: Modbus      
   - platform: modbus_spy
     name: "Domestic hot water temperature"
     device_class: "temperature"
@@ -403,15 +417,21 @@ sensor:
     update_interval: 20s
   - platform: pulse_meter
     pin: GPIO33
-    name: Pulse meter
+    name: Pulse meter    
     unit_of_measurement: "l/min"
     filters:
       - lambda: return x / id(flow_sensor_calibration).state;
+      - delta: 1
     total:
       name: Total pulses 
       unit_of_measurement: "l"
       filters:
-        - lambda: return x / id(flow_sensor_calibration).state;      
+        - lambda: return x / id(flow_sensor_calibration).state;
+        - delta: 1
+    on_value:
+      - script.execute:
+          id: blink_light
+          calling_component: Pulse
   - platform: dallas
     name: Dallas temperature 1
     index: 0
@@ -505,9 +525,29 @@ switch:
   - platform: gpio
     pin: GPIO22
     name: Relais 1
+    on_turn_on:
+    - script.execute:
+        id: relay_light
+        calling_component: Relais 1
+        relais_state: on
+    on_turn_off:
+    - script.execute:
+        id: relay_light
+        calling_component: Relais 1
+        relais_state: off
   - platform: gpio
     pin: GPIO23
     name: Relais 2
+    on_turn_on:
+    - script.execute:
+        id: relay_light
+        calling_component: Relais 2
+        relais_state: on
+    on_turn_off:
+    - script.execute:
+        id: relay_light
+        calling_component: Relais 2
+        relais_state: off    
 
 number:
   - platform: template
@@ -661,8 +701,45 @@ number:
     optimistic: true
     entity_category: config
     unit_of_measurement: "pulses/l"
- 
+
+select:
+  - platform: template
+    name: "Green LED Status"
+    id: green_led_select
+    optimistic: true
+    restore_value: true
+    options:
+      - "Off"
+      - Modbus
+      - Pulse
+      - Relais 1
+      - Relais 2
+
 script:
+  - id: relay_light
+    parameters:
+      calling_component: string
+      relais_state: bool
+    then:
+      - if: 
+          condition: 
+            lambda: return id(green_led_select).state == calling_component;
+          then:
+            - light.control: 
+                id: led_green
+                state: !lambda return relais_state;
+
+  - id: blink_light
+    parameters:
+      calling_component: string
+    then:
+      - if: 
+          condition: 
+            lambda: return id(green_led_select).state == calling_component;
+          then:
+            - light.turn_on: led_green
+            - delay: 250ms
+            - light.turn_off: led_green
   - id: calculate_heating_curve
     then:
       - sensor.template.publish:
