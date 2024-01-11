@@ -415,10 +415,10 @@ sensor:
     name: "WiFi signal dB"
     id: wifi_signal_db
     update_interval: 20s
-  - platform: pulse_meter
+  - platform: pulse_counter
     pin: GPIO33
     name: Pulse meter    
-    unit_of_measurement: "l/min"
+    unit_of_measurement: "l/hr"
     filters:
       - lambda: return x / id(flow_sensor_calibration).state;
       - delta: 1
