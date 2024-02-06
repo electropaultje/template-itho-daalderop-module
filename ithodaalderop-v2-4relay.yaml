@@ -1,3 +1,5 @@
+# Use this YAML for PCB version 2.2 and above
+
 substitutions:
   device_name: ithodaalderop
   friendly_name: Itho Daalderop Heat Pump Module
@@ -19,7 +21,7 @@ external_components:
   - source: github://electropaultje/modbus-spy-esphome@latest-stable
     
 dashboard_import:
-  package_import_url: github://electropaultje/template-itho-daalderop-module/ithodaalderop-2relay.yaml@main
+  package_import_url: github://electropaultje/template-itho-daalderop-module/ithodaalderop-v2-4relay.yaml@main
   import_full_config: true  
 
 # Enable logging
@@ -55,11 +57,13 @@ status_led:
 uart:
   baud_rate: 19200
   rx_pin: GPIO32
+  tx_pin: GPIO33
   parity: ODD
 
 modbus_spy:
   id: modbusspy
   log_not_configured_data: false
+  flow_control_pin: GPIO14
 
 output:
   - platform: gpio
@@ -416,7 +420,7 @@ sensor:
     id: wifi_signal_db
     update_interval: 20s
   - platform: pulse_counter
-    pin: GPIO33
+    pin: GPIO35
     name: Pulse meter    
     unit_of_measurement: "l/hr"
     filters:
@@ -548,6 +552,32 @@ switch:
         id: relay_light
         calling_component: Relais 2
         relais_state: off    
+  - platform: gpio
+    pin: GPIO26
+    name: Relais 3
+    on_turn_on:
+    - script.execute:
+        id: relay_light
+        calling_component: Relais 3
+        relais_state: on
+    on_turn_off:
+    - script.execute:
+        id: relay_light
+        calling_component: Relais 3
+        relais_state: off    
+  - platform: gpio
+    pin: GPIO25
+    name: Relais 4    
+    on_turn_on:
+    - script.execute:
+        id: relay_light
+        calling_component: Relais 4
+        relais_state: on
+    on_turn_off:
+    - script.execute:
+        id: relay_light
+        calling_component: Relais 4
+        relais_state: off
 
 number:
   - platform: template
@@ -714,6 +744,8 @@ select:
       - Pulse
       - Relais 1
       - Relais 2
+      - Relais 3
+      - Relais 4
 
 script:
   - id: relay_light
