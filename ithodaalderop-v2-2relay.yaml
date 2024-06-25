@@ -19,6 +19,8 @@ esp32:
 
 external_components:
   - source: github://electropaultje/modbus-spy-esphome@latest-stable
+  - source: github://esphome/esphome@2024.5.5
+    components: [ dallas ]  
 
 dashboard_import:
   package_import_url: github://electropaultje/template-itho-daalderop-module/ithodaalderop-v2-2relay.yaml@main
