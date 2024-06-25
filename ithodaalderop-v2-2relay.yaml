@@ -10,7 +10,7 @@ esphome:
   friendly_name: ${friendly_name}
   project:
     name: "electropaultje.ithodaalderop"
-    version: "1.0.5"
+    version: "1.0.6"
 
 esp32:
   board: esp32dev
