@@ -6,6 +6,7 @@ substitutions:
 esphome:
   name: ${device_name}
   friendly_name: ${friendly_name}
+  min_version: 2024.6.0
   project:
     name: "electropaultje.ithodaalderop"
     version: "1.0.6"
