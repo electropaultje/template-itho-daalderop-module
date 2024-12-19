@@ -9,7 +9,7 @@ esphome:
   min_version: 2024.6.0
   project:
     name: "electropaultje.ithodaalderop"
-    version: "1.0.6"
+    version: "1.0.7"
 
 esp32:
   board: esp32dev
@@ -529,6 +529,7 @@ switch:
   - platform: gpio
     pin: GPIO22
     name: Relais 1
+    restore_mode: RESTORE_DEFAULT_OFF    
     on_turn_on:
     - script.execute:
         id: relay_light
@@ -542,6 +543,7 @@ switch:
   - platform: gpio
     pin: GPIO23
     name: Relais 2
+    restore_mode: RESTORE_DEFAULT_OFF
     on_turn_on:
     - script.execute:
         id: relay_light
