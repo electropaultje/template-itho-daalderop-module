@@ -1,4 +1,4 @@
-# Use this YAML for PCB version 2.2 and above
+# Use this YAML for PCB version 2 and above
 
 substitutions:
   device_name: ithodaalderop
@@ -11,7 +11,7 @@ esphome:
   min_version: 2024.6.0
   project:
     name: "electropaultje.ithodaalderop"
-    version: "1.0.7"
+    version: "1.0.8"
 
 esp32:
   board: esp32dev
@@ -20,8 +20,6 @@ esp32:
 
 external_components:
   - source: github://electropaultje/modbus-spy-esphome@latest-stable
-  - source: github://esphome/esphome@2024.5.5
-    components: [ dallas ]  
 
 dashboard_import:
   package_import_url: github://electropaultje/template-itho-daalderop-module/ithodaalderop-v2-2relay.yaml@main
@@ -38,7 +36,6 @@ logger:
     ModbusRegisterSensor: INFO
     ModbusBinarySensor: INFO
     sensor: INFO
-    dallas.sensor: NONE
 # Enable Home Assistant API
 api:
 
@@ -79,9 +76,10 @@ light:
     id: led_green
     output: led_green_output
 
-dallas:
-  - pin: GPIO27
-    update_interval: 5s
+one_wire:
+  - platform: gpio
+    id: one_wire_1
+    pin: GPIO27
 
 sensor:
   - platform: modbus_spy
@@ -440,19 +438,31 @@ sensor:
       - script.execute:
           id: blink_light
           calling_component: Pulse
-  - platform: dallas
+  - platform: dallas_temp
+    id: temperature_sensor_1
     name: Dallas temperature 1
+    one_wire_id: one_wire_1
+    icon: mdi:thermometer
     index: 0
+    update_interval: 15s
     filters:
       - delta: 0.1
-  - platform: dallas
+  - platform: dallas_temp
+    id: temperature_sensor_2
     name: Dallas temperature 2
+    one_wire_id: one_wire_1
+    icon: mdi:thermometer
     index: 1
+    update_interval: 15s
     filters:
       - delta: 0.1
-  - platform: dallas
+  - platform: dallas_temp
+    id: temperature_sensor_3
     name: Dallas temperature 3
+    one_wire_id: one_wire_1
+    icon: mdi:thermometer
     index: 2
+    update_interval: 15s
     filters:
       - delta: 0.1
   - platform: template
