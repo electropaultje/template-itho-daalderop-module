@@ -9,3 +9,8 @@ ESPHOME compile ithodaalderop-v2-2relay.yaml
 COPY .esphome\build\ithodaalderop\.pioenvs\ithodaalderop\firmware.bin .\ithodaalderop-v2-2relay.bin /Y /V
 ESPHOME compile ithodaalderop-v2-4relay.yaml
 COPY .esphome\build\ithodaalderop\.pioenvs\ithodaalderop\firmware.bin .\ithodaalderop-v2-4relay.bin /Y /V
+
+ESPHOME compile ithodaalderop-v3-2relay.yaml
+COPY .esphome\build\ithodaalderop\.pioenvs\ithodaalderop\firmware.bin .\ithodaalderop-v3-2relay.bin /Y /V
+ESPHOME compile ithodaalderop-v3-4relay.yaml
+COPY .esphome\build\ithodaalderop\.pioenvs\ithodaalderop\firmware.bin .\ithodaalderop-v3-4relay.bin /Y /V
