@@ -11,7 +11,7 @@ esphome:
   min_version: 2024.6.0
   project:
     name: "electropaultje.ithodaalderop"
-    version: "1.0.8"
+    version: "1.0.9"
 
 esp32:
   board: esp32dev
@@ -60,6 +60,8 @@ uart:
   rx_pin: GPIO32
   tx_pin: GPIO33
   parity: ODD
+  rx_full_threshold: 1
+  rx_timeout: 1
 
 modbus_spy:
   id: modbusspy
